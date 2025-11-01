@@ -7,7 +7,7 @@ This repository is an experimental project (`実験用`) related to YM2151 sound
 ## Repository Structure
 
 The repository currently has a minimal structure:
-- `README.md` - Project documentation (in Japanese)
+- `README.md` - Project documentation (bilingual)
 - `LICENSE` - MIT License
 - `.gitignore` - Git ignore rules for C/C++ projects
 
@@ -18,7 +18,8 @@ This is an experimental repository for developing tools or applications to play 
 ## Contribution Guidelines
 
 ### Language and Communication
-- The primary language for this project is Japanese, as indicated by the README
+- This project supports both Japanese and English
+- The repository name and structure use English, while some documentation contains Japanese text
 - Code comments and documentation may be in Japanese or English
 
 ### Code Standards
