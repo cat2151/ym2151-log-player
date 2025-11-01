@@ -53,3 +53,14 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Build artifacts
+player
+player.exe
+
+# Output files
+*.wav
+*.json
+
+# But include sample files
+!sample_events.json
