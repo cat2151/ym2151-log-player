@@ -1,0 +1,13 @@
+{
+  "event_count": 8,
+  "events": [
+    {"time": 0, "addr": "0x08", "data": "0x00"},
+    {"time": 0, "addr": "0x08", "data": "0x01"},
+    {"time": 0, "addr": "0x20", "data": "0xC7"},
+    {"time": 0, "addr": "0x38", "data": "0x00"},
+    {"time": 0, "addr": "0x40", "data": "0x01"},
+    {"time": 0, "addr": "0x60", "data": "0x00"},
+    {"time": 0, "addr": "0x28", "data": "0x4C"},
+    {"time": 0, "addr": "0x08", "data": "0x78"}
+  ]
+}

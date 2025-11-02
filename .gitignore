@@ -65,6 +65,7 @@ test_json_loader
 # JSON log files (but not config files)
 /*.json
 !sample_events.json
+!sample_events_pass1.json
 
 # Allow config JSON files
 !.vscode/*.json
