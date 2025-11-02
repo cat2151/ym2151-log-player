@@ -60,7 +60,11 @@ player.exe
 
 # Output files
 *.wav
-*.json
 
-# But include sample files
+# JSON log files (but not config files)
+/*.json
 !sample_events.json
+
+# Allow config JSON files
+!.vscode/*.json
+!.github/**/*.json
