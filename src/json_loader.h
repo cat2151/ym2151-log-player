@@ -1,7 +1,8 @@
 #include "types.h"
 
 // Simple JSON parser for YM2151 log format
-// Expected format: {"events": [{"time": 0, "addr": "0x08", "data": "0x00", "is_data": 0}, ...]}
+// Expected format: {"events": [{"time": 0, "addr": "0x08", "data": "0x00"}, ...]}
+// Note: "is_data" field is optional and for backward compatibility only
 
 // Parse hex string (e.g., "0x08" -> 8)
 static uint8_t parse_hex(const char *str)
@@ -130,5 +131,28 @@ RegisterEventList *load_events_json(const char *filename)
 
     free(buffer);
     printf("✅ Loaded %zu events from %s\n", list->count, filename);
+    
+    // Check if this is pass1 format (needs conversion) or pass2 format (already split)
+    // Pass1 format: all events have is_data_write = 0 (or field not present)
+    // Pass2 format: events alternate between is_data_write = 0 and 1
+    int has_data_write_set = 0;
+    for (size_t i = 0; i < list->count; i++)
+    {
+        if (list->events[i].is_data_write == 1)
+        {
+            has_data_write_set = 1;
+            break;
+        }
+    }
+    
+    // If no events have is_data_write=1, this is pass1 format and needs conversion
+    if (!has_data_write_set && list->count > 0)
+    {
+        printf("Detected pass1 format (simple register writes), converting to pass2 format...\n");
+        RegisterEventList *pass2 = convert_to_pass2_format(list);
+        free_event_list(list);
+        return pass2;
+    }
+    
     return list;
 }

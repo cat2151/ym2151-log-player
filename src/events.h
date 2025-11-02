@@ -55,6 +55,49 @@ uint32_t duration_to_samples(double duration_seconds)
     return (uint32_t)(duration_seconds * INTERNAL_SAMPLE_RATE);
 }
 
+// Convert pass1 format events to pass2 format (add register write delays and split addr/data writes)
+// This function takes simple register write events and converts them into the format needed by the YM2151,
+// which requires separate address and data register writes with timing delays between them.
+RegisterEventList *convert_to_pass2_format(RegisterEventList *pass1)
+{
+    RegisterEventList *list = create_event_list();
+
+    printf("Converting to pass2 format: Splitting register writes and adding delays\n");
+    printf("  Delay per register write: %d samples\n", DELAY_SAMPLES);
+
+    uint32_t accumulated_delay = 0;
+    uint32_t last_time = 0;
+
+    for (size_t i = 0; i < pass1->count; i++)
+    {
+        RegisterEvent *event = &pass1->events[i];
+
+        // If this event is at a different time, reset accumulated delay
+        if (event->sample_time != last_time)
+        {
+            accumulated_delay = 0;
+            last_time = event->sample_time;
+        }
+
+        // Split each pass1 event into two pass2 events with timing:
+        // Note: Both address and data are stored in each event for clarity in JSON output
+        // and to track the complete register write operation.
+
+        // 1. Address register write at time T
+        uint32_t addr_time = event->sample_time + accumulated_delay;
+        add_event_with_flag(list, addr_time, event->address, event->data, 0); // is_data_write = 0
+        accumulated_delay += DELAY_SAMPLES;
+
+        // 2. Data register write at time T + DELAY_SAMPLES
+        uint32_t data_time = event->sample_time + accumulated_delay;
+        add_event_with_flag(list, data_time, event->address, event->data, 1); // is_data_write = 1
+        accumulated_delay += DELAY_SAMPLES;
+    }
+
+    printf("  Conversion complete: %zu events (split from %zu pass1 events)\n\n", list->count, pass1->count);
+    return list;
+}
+
 // Calculate total playback duration from events
 double calculate_playback_duration(RegisterEventList *events)
 {
