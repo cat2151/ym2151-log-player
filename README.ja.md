@@ -82,3 +82,5 @@ YM2151ログJSONファイルは以下の形式である必要があります：
 ## ライセンス
 
 MIT License
+
+※英語版README.mdは、README.ja.mdを元にGeminiの翻訳でGitHub Actionsにより自動生成しています
