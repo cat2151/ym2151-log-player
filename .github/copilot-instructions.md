@@ -131,3 +131,9 @@ Currently minimal automated testing. Manual verification via:
 2. Generate audio output without distortion
 3. Verify `output.wav` file creation and content
 4. Cross-platform build verification
+
+# userからの指示
+- commit前にruff formatとruff check --fixを実行する
+- 作業報告は、プルリクエストのコメントに書く。document作成禁止
+  - DRY原則に準拠し、「codeやbuild scriptと同じことを、documentに書いたせいで、そのdocumentが陳腐化してハルシネーションやuserレビューコスト増大や混乱ほか様々なトラブル原因になる」を防止する
+  - なおissue-notes/は、userがissueごとの意図を記録する用途で使う
