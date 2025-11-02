@@ -34,6 +34,14 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // Save pass2 format to JSON file
+    const char *pass2_filename = "output_pass2.json";
+    if (!save_events_json(pass2_filename, events))
+    {
+        fprintf(stderr, "❌ Failed to save pass2 events to %s\n", pass2_filename);
+        // Continue execution even if save fails
+    }
+
     // Calculate playback duration
     double duration = calculate_playback_duration(events);
     uint32_t total_samples = duration_to_samples(duration);

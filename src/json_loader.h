@@ -10,7 +10,7 @@ static uint8_t parse_hex(const char *str)
 {
     if (!str)
         return 0;
-    
+
     uint32_t value = 0;
     if (str[0] == '0' && str[1] && (str[1] == 'x' || str[1] == 'X'))
     {
@@ -36,7 +36,7 @@ static uint32_t parse_uint(const char *str)
 {
     if (!str)
         return 0;
-    
+
     uint32_t value = 0;
     while (*str >= '0' && *str <= '9')
     {
@@ -122,7 +122,7 @@ RegisterEventList *load_events_json(const char *filename)
 
     free(buffer);
     printf("✅ Loaded %zu events from %s\n", list->count, filename);
-    
+
     // Always convert pass1 format to pass2 format (split register writes with delays)
     if (list->count > 0)
     {
@@ -131,6 +131,44 @@ RegisterEventList *load_events_json(const char *filename)
         free_event_list(list);
         return pass2;
     }
-    
+
     return list;
+}
+
+// Save events to JSON file in pass2 format
+int save_events_json(const char *filename, RegisterEventList *events)
+{
+    FILE *fp = fopen(filename, "w");
+    if (!fp)
+    {
+        fprintf(stderr, "❌ Failed to open %s for writing\n", filename);
+        return 0;
+    }
+
+    // Write JSON header
+    fprintf(fp, "{\n");
+    fprintf(fp, "  \"event_count\": %zu,\n", events->count);
+    fprintf(fp, "  \"events\": [\n");
+
+    // Write each event
+    for (size_t i = 0; i < events->count; i++)
+    {
+        RegisterEvent *event = &events->events[i];
+        fprintf(fp, "    {\"time\": %u, \"addr\": \"0x%02X\", \"data\": \"0x%02X\", \"is_data\": %d}",
+                event->sample_time, event->address, event->data, event->is_data_write);
+
+        if (i < events->count - 1)
+        {
+            fprintf(fp, ",");
+        }
+        fprintf(fp, "\n");
+    }
+
+    // Write JSON footer
+    fprintf(fp, "  ]\n");
+    fprintf(fp, "}\n");
+
+    fclose(fp);
+    printf("✅ Saved %zu events to %s (pass2 format)\n", events->count, filename);
+    return 1;
 }
