@@ -69,3 +69,4 @@ test_json_loader
 # Allow config JSON files
 !.vscode/*.json
 !.github/**/*.json
+_codeql_detected_source_root
