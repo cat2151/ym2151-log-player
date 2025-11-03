@@ -143,12 +143,12 @@ void data_callback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uin
     pContext->total_callback_time_ms += elapsed_ms;
     pContext->callback_count++;
     
-    if (pContext->callback_count == 1 || elapsed_ms > pContext->max_callback_time_ms)
+    if (elapsed_ms > pContext->max_callback_time_ms)
     {
         pContext->max_callback_time_ms = elapsed_ms;
     }
     
-    if (pContext->callback_count == 1 || elapsed_ms < pContext->min_callback_time_ms)
+    if (elapsed_ms < pContext->min_callback_time_ms)
     {
         pContext->min_callback_time_ms = elapsed_ms;
     }

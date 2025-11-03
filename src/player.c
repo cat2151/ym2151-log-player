@@ -49,7 +49,7 @@ int main(int argc, char **argv)
     // Initialize audio context
     AudioContext context;
     memset(&context, 0, sizeof(AudioContext));
-    context.min_callback_time_ms = 1000000.0; // Initialize to a large value
+    context.min_callback_time_ms = DBL_MAX; // Initialize to maximum possible value
 
     // Allocate WAV buffer
     context.wav_buffer = (int32_t *)malloc(total_samples * 2 * sizeof(int32_t));

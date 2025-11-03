@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <math.h>
+#include <float.h>
 #include "../opm.h"
 
 // Sample rate and clock settings
