@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <math.h>
+#include <float.h>
 #include "../opm.h"
 
 // Sample rate and clock settings
@@ -62,6 +63,12 @@ typedef struct
     size_t next_event_index;
     int32_t *wav_buffer; // Buffer for WAV output
     size_t wav_buffer_pos;
+    
+    // Timing measurement fields
+    double total_callback_time_ms;  // Total time spent in callbacks
+    uint64_t callback_count;         // Number of callbacks
+    double max_callback_time_ms;     // Maximum callback processing time
+    double min_callback_time_ms;     // Minimum callback processing time
 } AudioContext;
 
 // WAV file structures

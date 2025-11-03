@@ -40,6 +40,10 @@ void data_callback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uin
 
     (void)pInput;
 
+    // Start timing measurement
+    struct timespec start_time, end_time;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+
     if (!pContext->is_playing)
     {
         memset(pOutput, 0, frameCount * 2 * sizeof(int16_t));
@@ -128,5 +132,24 @@ void data_callback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uin
             pOutputS16[i * 2] = 0;
             pOutputS16[i * 2 + 1] = 0;
         }
+    }
+
+    // End timing measurement
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    double elapsed_ms = (end_time.tv_sec - start_time.tv_sec) * 1000.0 +
+                        (end_time.tv_nsec - start_time.tv_nsec) / 1000000.0;
+
+    // Update timing statistics
+    pContext->total_callback_time_ms += elapsed_ms;
+    pContext->callback_count++;
+    
+    if (elapsed_ms > pContext->max_callback_time_ms)
+    {
+        pContext->max_callback_time_ms = elapsed_ms;
+    }
+    
+    if (elapsed_ms < pContext->min_callback_time_ms)
+    {
+        pContext->min_callback_time_ms = elapsed_ms;
     }
 }

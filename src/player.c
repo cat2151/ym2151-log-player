@@ -49,6 +49,7 @@ int main(int argc, char **argv)
     // Initialize audio context
     AudioContext context;
     memset(&context, 0, sizeof(AudioContext));
+    context.min_callback_time_ms = DBL_MAX; // Initialize to maximum possible value
 
     // Allocate WAV buffer
     context.wav_buffer = (int32_t *)malloc(total_samples * 2 * sizeof(int32_t));
@@ -100,7 +101,13 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    printf("✅ Audio initialized\n\n");
+    // Display audio buffer information
+    uint32_t buffer_size_frames = device.playback.internalPeriodSizeInFrames;
+    double buffer_duration_ms = (double)buffer_size_frames / OUTPUT_SAMPLE_RATE * 1000.0;
+    
+    printf("✅ Audio initialized\n");
+    printf("Audio buffer size: %u frames\n", buffer_size_frames);
+    printf("Buffer duration (processing time window): %.2f ms\n\n", buffer_duration_ms);
 
     // Start playback
     if (ma_device_start(&device) != MA_SUCCESS)
@@ -121,6 +128,29 @@ int main(int argc, char **argv)
     }
 
     printf("■  Playback complete\n\n");
+
+    // Display timing statistics
+    if (context.callback_count > 0)
+    {
+        printf("Audio callback timing statistics:\n");
+        printf("  Total callbacks: %lu\n", (unsigned long)context.callback_count);
+        printf("  Average processing time: %.3f ms\n", 
+               context.total_callback_time_ms / context.callback_count);
+        printf("  Minimum processing time: %.3f ms\n", context.min_callback_time_ms);
+        printf("  Maximum processing time: %.3f ms\n", context.max_callback_time_ms);
+        printf("  Buffer duration: %.2f ms\n", buffer_duration_ms);
+        
+        double avg_time = context.total_callback_time_ms / context.callback_count;
+        double cpu_usage = (avg_time / buffer_duration_ms) * 100.0;
+        printf("  CPU usage: %.1f%%\n", cpu_usage);
+        
+        if (context.max_callback_time_ms > buffer_duration_ms)
+        {
+            printf("  ⚠️  Warning: Maximum processing time (%.3f ms) exceeds buffer duration (%.2f ms)\n",
+                   context.max_callback_time_ms, buffer_duration_ms);
+        }
+        printf("\n");
+    }
 
     // Stop and cleanup audio
     ma_device_uninit(&device);
