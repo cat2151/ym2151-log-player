@@ -92,6 +92,20 @@ void data_callback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uin
         }
 
         // Store to internal buffer (convert to 16-bit)
+        // 
+        // 音量を1/2にしている理由 (Why volume is halved):
+        // - OPM chip output range: approximately -8176 to +8160 (measured with test_volume_range)
+        // - int16_t range: -32768 to +32767
+        // - Theoretical headroom without /2: ~24,600 samples (4x safety margin)
+        // 
+        // Division by 2 rationale:
+        // 1. User experience: Provides comfortable default listening volume
+        // 2. Safety margin: Extra headroom against unexpected peaks (8x instead of 4x)
+        // 3. Mix headroom: Allows multiple channels at max volume without clipping
+        // 
+        // Note: Division by 2 is NOT required to prevent overflow with typical usage.
+        // It can be removed if maximum loudness is desired, but may result in 
+        // uncomfortably loud output or require manual volume adjustment.
         pContext->internal_buffer[i * 2] = (int16_t)(output[0] / 2);
         pContext->internal_buffer[i * 2 + 1] = (int16_t)(output[1] / 2);
 

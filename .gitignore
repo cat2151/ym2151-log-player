@@ -58,6 +58,7 @@ dkms.conf
 player
 player.exe
 test_json_loader
+test_volume_range
 
 # Output files
 *.wav

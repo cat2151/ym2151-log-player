@@ -40,7 +40,12 @@ int save_wav_file(const char *filename, int32_t *buffer, uint32_t num_samples)
     // Write audio data (convert 32-bit to 16-bit)
     for (uint32_t i = 0; i < num_samples * 2; i++)
     {
-        // Divide by 2 to convert from 32-bit to 16-bit range
+        // 音量を1/2にしている理由 (Why volume is halved):
+        // See detailed explanation in src/core.h at the audio generation step.
+        // This maintains consistency between real-time playback and WAV file output.
+        // 
+        // Summary: Division by 2 provides comfortable listening volume and safety margin,
+        // but is not strictly necessary to prevent overflow (OPM output ~8160, int16_t max 32767).
         int16_t sample = (int16_t)(buffer[i] / 2);
         fwrite(&sample, sizeof(int16_t), 1, fp);
     }
